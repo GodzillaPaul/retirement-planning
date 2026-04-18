@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>退休財務計畫書 V1.26</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="app"></div>
+
+  <script type="module">
+    import { renderInputPage, renderReportPage, scaleWrap } from './js/ui.js';
+    import { exportPDF, exportImage } from './js/export-service.js';
+
+    const S = {
+      page: "input", clientName: "", clientPhoto: null,
+      gender: "M", currentAge: 22, retirementAge: 65,
+      monthlyExpense: 30000, lifeExpectancy: 85,
+      assumedReturn: 6, preparedAmount: 0
+    };
+
+    function render() {
+      const app = document.getElementById("app");
+      if (S.page === "input") {
+        const p = renderInputPage(S, render, () => { S.page = "report"; render(); });
+        app.innerHTML = p.html;
+        p.bind();
+      } else {
+        const p = renderReportPage(S, () => { S.page = "input"; render(); }, exportPDF, exportImage);
+        app.innerHTML = p.html;
+        p.bind();
+      }
+    }
+
+    render();
+    window.addEventListener("resize", () => {
+      if (S.page === "input") scaleWrap("input-wrap", 480);
+      else scaleWrap("report-wrap", 780);
+    });
+  </script>
+</body>
+</html>

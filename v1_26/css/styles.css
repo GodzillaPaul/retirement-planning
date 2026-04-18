@@ -1,0 +1,23 @@
+/* ═══ 退休財務計畫書 V1.26 ═══ */
+* { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; box-sizing: border-box; }
+input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+.safe-pad { padding: max(1rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left)); }
+input, select { font-size: 16px !important; -webkit-appearance: none; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.tap-btn:active { opacity: 0.75; transform: scale(0.98); transition: all 0.1s; }
+body { -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; margin: 0; }
+#input-outer, #report-outer { width: 100%; overflow-x: hidden; }
+#input-wrap { width: 480px; transform-origin: top left; }
+#report-wrap { width: 780px; transform-origin: top left; }
+@font-face {
+  font-family: 'LantingHei';
+  src: local('LantingHei-Black'), local('蘭亭黑-繁 特黑'), local('HanHei SC'), local('PingFang TC'), local('Noto Sans TC');
+  font-weight: 900;
+}
+.lantin { font-family: 'LantingHei', 'PingFang TC', 'Heiti TC', 'Apple LiGothic', 'Noto Sans TC', sans-serif; font-weight: 900; color: #2d2d2d; letter-spacing: 0.04em; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media print {
+  .no-print { display: none !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  #report-wrap { transform: none !important; margin-bottom: 0 !important; }
+}
