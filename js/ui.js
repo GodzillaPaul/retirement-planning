@@ -61,6 +61,14 @@ export function renderInputPage(S, onStateChange, onGenerate) {
         </div>
 
         <div class="bg-white rounded-2xl shadow-lg p-4 mb-4">
+          <h2 class="text-sm font-bold text-blue-600 mb-3">❷․₅ 方案一：自己存</h2>
+          <p class="text-xs text-gray-400 mb-3">（假設銀行平均滾息利率為1.2%）</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs font-semibold text-gray-500 mb-1 block">銀行存款年利率 (%)</label><input type="number" id="iBankRate" value="${S.bankRate ?? 1.2}" class="${IC}" min="0" max="10" step="0.1"/></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-4 mb-4">
           <h2 class="text-sm font-bold text-blue-600 mb-3">❸ 保單自動試算結果</h2>
           <p class="text-xs text-gray-400 mb-4">依據退休花費與年齡自動計算。月存上限 ${fmt(MAX_MS)} 元，超出自動轉入月超額保費。</p>
           ${S.preparedAmount > 0 ? `<div class="mb-4 bg-amber-50 rounded-xl px-4 py-2 text-sm text-amber-800">已準備退休金 ${fmt(S.preparedAmount)} 元，以 7% 年化換算每月可提供 <b>${fmt(Math.round(D.preparedMonthly))}</b> 元，保單目標缺口已自動扣除。</div>` : ""}
@@ -96,6 +104,7 @@ export function renderInputPage(S, onStateChange, onGenerate) {
       document.getElementById("iExpense").onchange = e => { S.monthlyExpense = +e.target.value; onStateChange(); };
       document.getElementById("iPrepared").onchange = e => { S.preparedAmount = +e.target.value; };
       document.getElementById("iReturn").onchange = e => { S.assumedReturn = +e.target.value; onStateChange(); };
+      document.getElementById("iBankRate").onchange = e => { S.bankRate = +e.target.value; onStateChange(); };
       document.getElementById("btnGenerate").onclick = onGenerate;
       scaleWrap("input-wrap", 480);
     }
@@ -159,7 +168,7 @@ export function renderReportPage(S, onBack, onPdfClick, onImgClick) {
           <tr><td class="border border-gray-300 px-4 py-3 text-center">準備好退休金，每個月花存款${D.expW}萬元</td><td class="border border-gray-300 px-4 py-3 text-center">打造月配息每個月領${D.expW}萬元</td></tr>
           <tr><td class="border border-gray-300 px-4 py-3 text-center">需準備：${D.expW}萬 × 12個月 × ${D.retireYears}年 ＝ <span class="text-red-600 font-black text-xl">${D.needW}萬</span></td><td class="border border-gray-300 px-4 py-3 text-center">需準備：富邦月配息 7%<span class="text-blue-600 font-black text-xl">（約${D.capW}萬）</span>${S.preparedAmount > 0 ? `<div class="text-xs text-amber-600 mt-1">已扣除已準備退休金每月 ${fmt(Math.round(D.preparedMonthly))} 元</div>` : ""}</td></tr>
           <tr><td class="border border-gray-300 px-4 py-3 text-center bg-gray-50 font-bold">自己存</td><td class="border border-gray-300 px-4 py-3 text-center bg-gray-50 font-bold">富邦退休規劃方案</td></tr>
-          <tr><td class="border border-gray-300 px-4 py-4 text-center"><div class="mb-1">每年存下：${fmt(Math.round(D.selfAnnual))}</div><div class="text-red-600 font-black text-xl">每月存下：${fmt(Math.round(D.selfMonthly))}</div></td><td class="border border-gray-300 px-4 py-4 text-center"><div class="mb-1">每年存下：${fmt(D.policyAnnual)}</div><div class="text-blue-600 font-black text-xl">每月存下：${fmt(Math.round(D.policyMonthly))}</div></td></tr>
+          <tr><td class="border border-gray-300 px-4 py-4 text-center"><div class="mb-1">每年存下：${fmt(Math.round(D.selfAnnual))}</div><div class="text-red-600 font-black text-xl">每月存下：${fmt(Math.round(D.selfMonthly))}</div><div class="text-xs text-gray-400 mt-1">（假設銀行平均滾息利率為 ${S.bankRate ?? 1.2}%）</div></td><td class="border border-gray-300 px-4 py-4 text-center"><div class="mb-1">每年存下：${fmt(D.policyAnnual)}</div><div class="text-blue-600 font-black text-xl">每月存下：${fmt(Math.round(D.policyMonthly))}</div></td></tr>
         </tbody>
       </table>
 

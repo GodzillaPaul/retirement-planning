@@ -92,8 +92,38 @@ export function compute(S) {
   const retireYears = S.lifeExpectancy - S.retirementAge;
   const payYears = workYears + 1;
   const totalNeed = S.monthlyExpense * retireYears * 12;
-  const selfAnnual = workYears > 0 ? totalNeed / workYears : 0;
-  const selfMonthly = selfAnnual / 12;
+
+  // ── 方案一：銀行零存整付＋年度整存整付複利模型 ──
+  // 規則：當年每月存入採月複利，年末累積本利和再以年利率複利滾存至退休
+  // 使用二分法逼近「每月需存多少錢才能達到 totalNeed」
+  const bankAnnualRate = (S.bankRate ?? 1.2) / 100;
+  const bankMonthlyRate = Math.pow(1 + bankAnnualRate, 1 / 12) - 1;
+
+  // 逐年累積：當年月存採月複利，年末加入前期累積後以年利率複利滾存
+  function calcFVCorrect(monthlyDeposit) {
+    if (workYears <= 0) return 0;
+    let accumulated = 0;
+    for (let y = 0; y < workYears; y++) {
+      // 本年 12 個月月存，月複利，年末本利和
+      const yearlyContrib = monthlyDeposit *
+        ((Math.pow(1 + bankMonthlyRate, 12) - 1) / bankMonthlyRate) *
+        (1 + bankMonthlyRate);
+      // 前期累積再滾一年，加上本年貢獻
+      accumulated = accumulated * (1 + bankAnnualRate) + yearlyContrib;
+    }
+    return accumulated;
+  }
+
+  // 二分法：找最小月存使 FV >= totalNeed
+  let lo = 0, hi = totalNeed; // hi 上界足夠大
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    if (calcFVCorrect(mid) >= totalNeed) hi = mid;
+    else lo = mid;
+    if (hi - lo < 1) break;
+  }
+  const selfMonthly = workYears > 0 ? Math.ceil(hi) : 0;
+  const selfAnnual = selfMonthly * 12;
   const distRate = 0.0468, distNav = 7.83;
   const preparedMonthly = S.preparedAmount * 0.07 / 12;
   const netMonthlyExpense = Math.max(0, S.monthlyExpense - preparedMonthly);
